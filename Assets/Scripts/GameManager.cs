@@ -7,21 +7,28 @@ public class GameManager : MonoBehaviour
     public float spawnInterval = 1f;
     private float spawnTimer = 0f;
 
-    public UIManager uiManager; // UIManager 스크립트를 연결할 변수
+    public UIManager uiManager;
     private int score = 0;
-    public bool isGameOver = false; // 게임 오버 상태를 저장할 변수
+    public bool isGameOver = false;
+
+    // <<< 추가된 부분 시작 >>>
+    [Header("Spawn Settings")] // Inspector 창에서 보기 좋게 헤더를 추가
+    public float spawnXMin = -10f; // 생성될 X좌표의 최솟값
+    public float spawnXMax = 10f;  // 생성될 X좌표의 최댓값
+    public float spawnY = 15f;     // 생성될 Y좌표 (높이)
+    // <<< 추가된 부분 끝 >>>
+
 
     void Start()
     {
-        isGameOver = false; // 게임 시작 시 초기화
-        Time.timeScale = 1f;  // 게임 시간을 정상 속도로 설정 (재시작을 위해)
+        isGameOver = false;
+        Time.timeScale = 1f;
         score = 0;
-        uiManager.UpdateScore(score); // 점수 UI 초기화
+        uiManager.UpdateScore(score);
     }
 
     void Update()
     {
-        // 게임 오버 상태라면 아무것도 실행하지 않음
         if (isGameOver)
         {
             return;
@@ -37,8 +44,12 @@ public class GameManager : MonoBehaviour
 
     void SpawnObject()
     {
-        float randomX = Random.Range(-10f, 10f);
-        Vector3 spawnPosition = new Vector3(randomX, 15f, 0f);
+        // <<< 수정된 부분 시작 >>>
+        // 설정된 범위 내에서 X좌표를 랜덤으로 정함
+        float randomX = Random.Range(spawnXMin, spawnXMax);
+        // 설정된 높이에서 생성되도록 Y좌표를 사용
+        Vector3 spawnPosition = new Vector3(randomX, spawnY, 0f);
+        // <<< 수정된 부분 끝 >>>
 
         if (Random.Range(0, 10) < 7)
         {
@@ -50,18 +61,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 점수를 추가하는 함수
     public void AddScore()
     {
         score += 10;
         uiManager.UpdateScore(score);
     }
 
-    // 게임 오버 처리 함수
     public void GameOver()
     {
         isGameOver = true;
-        Time.timeScale = 0f; // 게임 시간을 멈춤
+        Time.timeScale = 0f;
         uiManager.ShowGameOverUI(score);
     }
 }
