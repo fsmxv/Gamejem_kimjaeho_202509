@@ -18,6 +18,12 @@ public class GameManager : MonoBehaviour
     public float spawnY = 15f;     // 생성될 Y좌표 (높이)
     // <<< 추가된 부분 끝 >>>
 
+    [Header("Audio Clips")]
+    public AudioClip hitSound;   // 똥에 맞았을 때 재생할 오디오 클립
+    public AudioClip scoreSound; // 아이템을 먹었을 때 재생할 오디오 클립
+
+    private AudioSource audioSource; // 효과음을 재생할 AudioSource 컴포넌트
+
 
     void Start()
     {
@@ -25,6 +31,9 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         score = 0;
         uiManager.UpdateScore(score);
+
+        // GameManager 오브젝트에 있는 AudioSource 컴포넌트를 가져옴
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -65,6 +74,8 @@ public class GameManager : MonoBehaviour
     {
         score += 10;
         uiManager.UpdateScore(score);
+
+        audioSource.PlayOneShot(scoreSound);
     }
 
     public void GameOver()
@@ -72,5 +83,7 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
         Time.timeScale = 0f;
         uiManager.ShowGameOverUI(score);
+        audioSource.Stop();
+        audioSource.PlayOneShot(hitSound);
     }
 }
